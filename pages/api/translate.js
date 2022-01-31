@@ -1,8 +1,13 @@
 import Kuroshiro from 'kuroshiro'
 import KuromojiAnalyser from 'kuroshiro-analyzer-kuromoji'
 
+import { resolve } from 'path'
+
 const kuroshiro = new Kuroshiro()
-kuroshiro.init(new KuromojiAnalyser())
+kuroshiro.init(new KuromojiAnalyser({
+    dictPath: resolve('./src/data/dicts')
+}))
+
 
 export default async function handler(req, res) {
     if(!kuroshiro._analyzer) {
@@ -17,8 +22,6 @@ export default async function handler(req, res) {
         to: 'hiragana',
         mode: 'furigana',
     })
-
-    console.log(result)
 
     res.status(200).json({
         result: result
