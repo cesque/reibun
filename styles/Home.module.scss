@@ -1,0 +1,310 @@
+@use 'variables.scss';
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md);
+    // border-bottom: 3px solid #1e90ff;
+    font-size: 2rem;
+    font-weight: 400;
+}
+
+.headerReibun {
+    font-family: var(--font-jp);
+
+    rt {
+        color: #1e90ff;
+        font-family: var(--font-en);
+        font-weight: bold;
+    }
+}
+
+.attribution {
+    font-size: 1rem;
+    margin-left: var(--spacing-sm);
+    color: #c8d6e5;
+}
+
+.cesque {
+    transition: color 0.3s ease;
+    
+    &:hover {
+        color: #1e90ff;
+    }
+}
+
+
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+
+    flex-grow: 1;
+
+    align-items: center;
+}
+
+.sentences {
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.5;
+}
+
+.sentencesError {
+    color: #e74c3c;
+}
+
+.japanese {
+    font-family: var(--font-jp);
+    font-size: 3rem;
+    line-height: 1.5;
+    font-weight: normal;
+
+    @media (min-width: variables.$breakpoint-sm) {
+        font-size: 3rem;
+        line-height: 2;
+    }
+}
+
+.japaneseFuriganaAvailable {
+    transition: color 0.7s ease;
+
+    ruby {
+        font-weight: 500;
+        margin: 0 10px;
+
+        transition: color 0.7s ease;
+    }
+
+    rt {
+        color: #1e90ff;
+        opacity: 0;
+        transition: opacity 0.7s ease;
+
+        font-size: 1.5rem;
+
+        @media (min-width: variables.$breakpoint-sm) {
+            font-size: 1.7rem;
+        }
+    }
+}
+
+.japaneseFuriganaVisible {
+    color: #a4b0be; 
+
+    ruby {
+        color: #2c3e50;
+    }
+
+    rt {
+        opacity: 1;
+    }
+}
+
+.english {
+    color: #feca57;
+    letter-spacing: 0.1ex;
+    font-size: 1.5rem;
+    font-weight: 400;
+    
+    opacity: 0;
+    transition: none;
+    visibility: hidden;
+
+    @media (min-width: variables.$breakpoint-sm) {
+        font-size: 2rem;
+    }
+}
+
+.englishVisible {
+    transition: filter 0.3s ease;
+
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease;
+}
+
+.showButton, .nextButton, .selectLevelsButton, .closeLevelsButton {
+    appearance: none;
+    outline: none;
+    border: none;
+    background: #1e90ff;
+    color: white;
+    transition: background 0.2s ease;
+    max-width: 300px;
+    width: 100%;
+    padding: var(--spacing-sm);
+    border-radius: 10px;
+    cursor: pointer;
+    margin: var(--spacing-sm) 0;
+    font-size: 2rem;
+    font-family: var(--font-en);
+
+    &:hover {
+        background: #41a0ff;
+    }
+
+    &:active {
+        background: #1979da;
+    }
+}
+
+.selectLevelsButton {
+    background: #c8d6e5;
+    color: #8395a7;
+
+    &:hover {
+        background: #d9e2ec;
+    }
+
+    &:active {
+        color: #6f7e8d;
+        background: #aebdcc;
+    }
+}
+
+.levelsSection {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background: white;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.levelsSectionInner {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+}
+
+.list {
+    user-select: none;
+    list-style: none;
+    margin: 0;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+    padding: 0;
+
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-sm);
+
+    @media (min-width: variables.$breakpoint-sm) {
+        grid-template-columns: repeat(10, 1fr);
+    }
+}
+
+.levelSelectHelpers {
+    margin-bottom: var(--spacing-lg);
+    align-self: flex-end;
+}
+
+.levelSelectHelper {
+    appearance: none;
+    outline: none;
+    border: none;
+    background: none;
+    font-family: var(--font-en);
+    cursor: pointer;
+
+    color: #1e90ff;
+
+    &:hover {
+        color: #1979da;
+    }
+}
+
+.level {
+    background: #ecf0f1;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 10px;
+
+    transition: background 0.2s ease, color 0.2s ease;
+    padding: var(--spacing-sm);
+
+    cursor: pointer;
+
+    &:hover {
+        background: #e0e3e4;
+    }
+}
+
+.levelEnabled {
+    background: #1e90ff;
+    color: white;
+
+    &:hover {
+        background: #41a0ff;
+    }
+
+    &:active {
+        background: #1979da;
+    }
+}
+
+.closeLevelsButton {
+    align-self: center;
+}
+
+.loadingFuriganaModal {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0 var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: #1e90ff;
+    color: white;
+    border-bottom-left-radius: 10px;    
+    border-bottom-right-radius: 10px;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    animation: loading 2s infinite alternate ease-in-out;
+    transform: translateY(-100%);
+    transition: transform 0.7s ease;
+    
+    &:before {
+        content: '';
+        display: block;
+        background: white;
+        height: 15px;
+        width: 15px;
+        margin-bottom: 2px;
+        margin-right: var(--spacing-sm);
+        border-radius: 100vw;
+    }
+
+    &.loadingFuriganaModalVisible {
+        transform: translateY(0);
+    }
+}
+
+@keyframes loading {
+    from { opacity: 0.5; }
+    to { opacity: 1; }
+  }
+  
