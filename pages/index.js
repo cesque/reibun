@@ -1,5 +1,6 @@
 import classNames from 'classnames'
 import Head from 'next/head'
+import Link from 'next/link'
 import React, { useEffect } from 'react'
 import styles from '../styles/Home.module.scss'
 
@@ -37,24 +38,28 @@ export default function Home() {
         } catch(e) {
             console.warn(e)
         }
-    }, [])
+    }, [ ])
 
-    useEffect(async () => {
+    useEffect(() => {
         setShowEnglish(false)
         setFurigana(null)
 
-        if(sentence) {
-            let params = new URLSearchParams()
-            params.set('q', sentence.ja)
+        async function getFurigana() {
+            if(sentence) {
+                let params = new URLSearchParams()
+                params.set('q', sentence.ja)
 
-            let response = await fetch(`${ serverURL }/api/translate?${ params.toString() }`)
-            let json = await response.json()
-            if(json.error) {
-                console.warn(json.error)
-            } else {
-                setFurigana(json.result)
+                let response = await fetch(`${ serverURL }/api/translate?${ params.toString() }`)
+                let json = await response.json()
+                if(json.error) {
+                    console.warn(json.error)
+                } else {
+                    setFurigana(json.result)
+                }
             }
         }
+
+        getFurigana()
     }, [ sentence ])
 
     async function fetchSentences() {
@@ -75,7 +80,7 @@ export default function Home() {
         setSentences(sentences)
     }
 
-    async function getRandomSentence() {
+    const getRandomSentence = React.useCallback(() => {
         if(sentences.length > 0) {
             let randomSentence = sentences[Math.floor(Math.random() * sentences.length)]
     
@@ -83,8 +88,7 @@ export default function Home() {
         } else {
             setSentence(null)
         }
-
-    }
+    }, [ sentences ])
     
     function toggleLevelState(i) {
         let newLevels = levels.slice()
@@ -150,11 +154,11 @@ export default function Home() {
             })
 
             let listElement = <li 
-                    className={ classes }
-                    key={ level.level }
-                    onMouseDown={ () => { setLevelDragState(!level.enabled); toggleLevelState(level.level) } }
-                    onMouseEnter={ () => { if(levelDragState != null) setLevelState(level.level, levelDragState) } }
-                >
+                className={ classes }
+                key={ level.level }
+                onMouseDown={ () => { setLevelDragState(!level.enabled); toggleLevelState(level.level) } }
+                onMouseEnter={ () => { if(levelDragState != null) setLevelState(level.level, levelDragState) } }
+            >
                 { level.level } 
             </li>
 
@@ -209,12 +213,14 @@ export default function Home() {
             </Head>
 
             <header className={ styles.header }>
-                <a href="/" className={ styles.headerReibun }>
-                    <ruby>
-                        例 <rp>(</rp><rt>rei</rt><rp>)</rp>
-                        文 <rp>(</rp><rt>bun</rt><rp>)</rp>
-                    </ruby>
-                </a>
+                <Link href="/">
+                    <a className={ styles.headerReibun } onClick={ () => window.location.reload() }>
+                        <ruby>
+                            例 <rp>(</rp><rt>rei</rt><rp>)</rp>
+                            文 <rp>(</rp><rt>bun</rt><rp>)</rp>
+                        </ruby>
+                    </a>
+                </Link>
                 <div className={ styles.attribution }>
                     by <a className={ styles.cesque } href="https://twitter.com/cesque">@cesque</a>
                 </div>
