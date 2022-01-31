@@ -86,8 +86,6 @@
     ruby {
         font-weight: 500;
         margin: 0 10px;
-
-        transition: color 0.7s ease;
     }
 
     rt {
@@ -136,6 +134,22 @@
     opacity: 1;
     visibility: visible;
     transition: opacity 0.3s ease;
+}
+
+.actions {
+    margin-top: var(--spacing-lg);
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: var(--spacing-md);
+
+    @media (min-width: variables.$breakpoint-sm) {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .showButton, .nextButton, .selectLevelsButton {
+        margin: 0 auto;
+    }
 }
 
 .showButton, .nextButton, .selectLevelsButton, .closeLevelsButton {

@@ -1,25 +1,30 @@
 import classNames from 'classnames'
 import Head from 'next/head'
 import Link from 'next/link'
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback, useState } from 'react'
 import styles from '../styles/Home.module.scss'
 
+import * as Kuroshiro from 'kuroshiro/dist/kuroshiro.min.js'
+import * as KuromojiAnalyser from 'kuroshiro-analyzer-kuromoji/dist/kuroshiro-analyzer-kuromoji'
+
 export default function Home() {
-    let [sentences, setSentences] = React.useState([])
-    let [sentence, setSentence] = React.useState(false)
-    let [levels, setLevels] = React.useState(new Array(60).fill(0).map((_, i) => {
+    let [sentences, setSentences] = useState([])
+    let [sentence, setSentence] = useState(false)
+    let [levels, setLevels] = useState(new Array(60).fill(0).map((_, i) => {
         return {
             level: i + 1,
             enabled: false,
         }
     }))
-    let [showEnglish, setShowEnglish] = React.useState(false)
-    let [showLevelSelect, setShowLevelSelect] = React.useState(false)
-    let [furigana, setFurigana] = React.useState(null)
+    let [showEnglish, setShowEnglish] = useState(false)
+    let [showLevelSelect, setShowLevelSelect] = useState(false)
 
-    let [levelDragState, setLevelDragState] = React.useState(null)
+    let [kuroshiro, setKuroshiro] = useState(null)
+    let [furigana, setFurigana] = useState(null)
 
-    const serverURL = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${ process.env.NEXT_PUBLIC_VERCEL_URL }` : process.env.NEXT_PUBLIC_SERVER_ADDRESS
+    let [levelDragState, setLevelDragState] = useState(null)
+
+    const serverURL = '' //process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${ process.env.NEXT_PUBLIC_VERCEL_URL }` : process.env.NEXT_PUBLIC_SERVER_ADDRESS
 
     useEffect(() => {
         setShowEnglish(false)
@@ -32,9 +37,24 @@ export default function Home() {
         try {
             let levelsFromStorage = localStorage.getItem('levels')
 
-            if(levelsFromStorage && (levelsFromStorage.updated == process.env.VERCEL_GIT_COMMIT_SHA)) {
+            if(levelsFromStorage && (levelsFromStorage.updated == process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA)) {
                 setLevels(JSON.parse(levelsFromStorage).levels)
             }
+        } catch(e) {
+            console.warn(e)
+        }
+
+        try {
+            async function instantiateKuroshiro() {
+                let instance = new Kuroshiro.default()
+                let analyser = new KuromojiAnalyser({ dictPath: '/dicts' })
+
+                await instance.init(analyser)
+
+                setKuroshiro(instance)
+            }
+
+            instantiateKuroshiro()
         } catch(e) {
             console.warn(e)
         }
@@ -45,17 +65,9 @@ export default function Home() {
         setFurigana(null)
 
         async function getFurigana() {
-            if(sentence) {
-                let params = new URLSearchParams()
-                params.set('q', sentence.ja)
-
-                let response = await fetch(`${ serverURL }/api/translate?${ params.toString() }`)
-                let json = await response.json()
-                if(json.error) {
-                    console.warn(json.error)
-                } else {
-                    setFurigana(json.result)
-                }
+            if(sentence && kuroshiro) {
+                console.log('getting furigana: ', sentence)
+                setFurigana(await kuroshiro.convert(sentence.ja, { to: 'hiragana', mode: 'furigana' }))
             }
         }
 
@@ -80,7 +92,7 @@ export default function Home() {
         setSentences(sentences)
     }
 
-    const getRandomSentence = React.useCallback(() => {
+    const getRandomSentence = useCallback(() => {
         if(sentences.length > 0) {
             let randomSentence = sentences[Math.floor(Math.random() * sentences.length)]
     
@@ -165,7 +177,7 @@ export default function Home() {
             list.push(listElement)
         }
 
-        let listRef = React.createRef()
+        let listRef = createRef()
 
         return <section className={ styles.levelsSection } onMouseUp={ () => setLevelDragState(null) }>
             <div className={ styles.levelsSectionInner }>
@@ -184,7 +196,7 @@ export default function Home() {
                     onClick={ () => { 
                         try {
                             localStorage.setItem('levels', JSON.stringify({
-                                updated: process.env.VERCEL_GIT_COMMIT_SHA || null,
+                                updated: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || null,
                                 levels
                             }))
                         } catch(e) {
@@ -201,7 +213,7 @@ export default function Home() {
     }
 
     let loadingModalClasses = classNames(styles.loadingFuriganaModal, {
-        [styles.loadingFuriganaModalVisible]: furigana == null
+        [styles.loadingFuriganaModalVisible]: kuroshiro == null
     })
 
     return (
