@@ -19,7 +19,7 @@ export default function Home() {
 
     let [levelDragState, setLevelDragState] = React.useState(null)
 
-    const serverURL = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${ process.env.NEXT_PUBLIC_VERCEL_URL }` : process.env.NEXT_PUBLIC_SERVER_ADDRESS
+    const serverURL = '' // process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${ process.env.NEXT_PUBLIC_VERCEL_URL }` : ''
 
     useEffect(() => {
         setShowEnglish(false)
