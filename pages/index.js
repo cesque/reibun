@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import Head from 'next/head'
 import Link from 'next/link'
-import React, { useEffect, useCallback, useState } from 'react'
+import React, { useEffect, useCallback, useState, createRef } from 'react'
 import styles from '../styles/Home.module.scss'
 
 import * as Kuroshiro from 'kuroshiro/dist/kuroshiro.min.js'
