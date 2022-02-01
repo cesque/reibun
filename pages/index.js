@@ -43,13 +43,13 @@ export default function Home() {
 
     useEffect(() => {
         try {
-            let levelsFromStorage = localStorage.getItem('levels')
+            let levelsFromStorage = JSON.parse(localStorage.getItem('levels'))
 
             console.log(levelsFromStorage.updated)
             console.log(process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA)
 
             if(levelsFromStorage && (levelsFromStorage.updated == process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA)) {
-                setLevels(JSON.parse(levelsFromStorage).levels)
+                setLevels(levelsFromStorage.levels)
                 console.log(`loaded levels from localStorage!`)
             }
         } catch(e) {
