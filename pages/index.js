@@ -229,7 +229,7 @@ export default function Home() {
         let englishClasses = classNames([ styles.english, styles.englishVisible ])
 
         return <section className={ classes }>
-            <h2 className={ styles.japanese }>【・_・'】・・・</h2>
+            <h2 className={ styles.japanese }>【・_・&apos;】・・・</h2>
             <h3 className={ englishClasses }>loading...</h3>
         </section>
     }
