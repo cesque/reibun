@@ -22,6 +22,7 @@ export default function Home() {
     }))
     let [showEnglish, setShowEnglish] = useState(false)
     let [showLevelSelect, setShowLevelSelect] = useState(false)
+    let [levelsChanging, setLevelsChanging] = useState(true)
 
     let [kuroshiro, setKuroshiro] = useState(null)
     let [furigana, setFurigana] = useState(null)
@@ -35,16 +36,23 @@ export default function Home() {
     }, [ sentences ])
 
     useEffect(() => {
-        fetchSentences()
+        if(!levelsChanging) {
+            fetchSentences()
+        }
+    }, [ levels, levelsChanging ])
 
+    useEffect(() => {
         try {
             let levelsFromStorage = localStorage.getItem('levels')
 
             if(levelsFromStorage && (levelsFromStorage.updated == process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA)) {
                 setLevels(JSON.parse(levelsFromStorage).levels)
+                console.log(`loaded levels from localStorage!`)
             }
         } catch(e) {
-            console.warn(e)
+            console.warn(e)     
+        } finally {
+            setLevelsChanging(false)
         }
 
         try {
@@ -99,14 +107,31 @@ export default function Home() {
     }
 
     const getRandomSentence = useCallback(() => {
-        if(sentences.length > 0) {
-            let randomSentence = sentences[Math.floor(Math.random() * sentences.length)]
+        console.log(`picked a random sentence from a selection of ${ sentences.length }`)
+        if(sentences.length > 1) {
+            let randomSentence = null
+            let n = 0
+            do {
+                randomSentence = sentences[Math.floor(Math.random() * sentences.length)]
+
+                if(n > 20) {
+                    // how did we get to this place
+                    // where we can't find a sentence different to
+                    // the previous? probably impossible
+                    console.warn('uh oh, failed to get a new sentence after multiple attempts even though there is one available!')
+                    setSentence(null)
+                    return
+                }
+            } while(sentence != null && randomSentence.en == sentence.en)
     
             setSentence(randomSentence)
+        } else if(sentences.length == 1) {
+            console.warn(`there's only one sentence for this selection, you may want to choose more levels`)
+            setSentence(sentences[0])
         } else {
             setSentence(null)
         }
-    }, [ sentences ])
+    }, [ sentences, sentence ])
     
     function toggleLevelState(i) {
         let newLevels = levels.slice()
@@ -212,7 +237,7 @@ export default function Home() {
                         }
 
                         setShowLevelSelect(false)
-                        fetchSentences()
+                        setLevelsChanging(false)
                     } }>
                     save
                 </button>
@@ -243,7 +268,7 @@ export default function Home() {
                     ? <button className={ styles.nextButton } type="button" onClick={ () => getRandomSentence() }>next</button>
                     : <button className={ styles.showButton } type="button" onClick={ () => setShowEnglish(true) }>show</button>
                 }
-                <button className={ styles.selectLevelsButton } type="button" onClick={ () => setShowLevelSelect(true) }>select levels</button>
+                <button className={ styles.selectLevelsButton } type="button" onClick={ () => { setShowLevelSelect(true); setLevelsChanging(true) } }>select levels</button>
             </section>
 
             { showLevelSelect && getLevelsContent() }
