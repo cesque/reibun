@@ -51,6 +51,9 @@ export default function Home() {
             if(levelsFromStorage && (levelsFromStorage.updated == process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA)) {
                 setLevels(levelsFromStorage.levels)
                 console.log(`loaded levels from localStorage!`)
+            } else {
+                console.log(`levels in local storage are out of date, saving defaults back to localstorage`)
+                saveLevelsToLocalStorage()
             }
         } catch(e) {
             console.warn(e)     
@@ -135,6 +138,13 @@ export default function Home() {
             setSentence(null)
         }
     }, [ sentences, sentence ])
+
+    function saveLevelsToLocalStorage() {
+        localStorage.setItem('levels', JSON.stringify({
+            updated: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || null,
+            levels
+        }))
+    }
     
     function toggleLevelState(i) {
         let newLevels = levels.slice()
@@ -231,10 +241,7 @@ export default function Home() {
                     type="button"
                     onClick={ () => { 
                         try {
-                            localStorage.setItem('levels', JSON.stringify({
-                                updated: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || null,
-                                levels
-                            }))
+                            saveLevelsToLocalStorage()
                         } catch(e) {
                             console.warn(e)
                         }
