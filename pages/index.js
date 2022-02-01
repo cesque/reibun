@@ -259,7 +259,7 @@ export default function Home() {
             <Head>
                 <title>例文 - reibun</title>
                 <meta name="description" content="practice your kanji with example sentences from wanikani" />
-                <link rel="icon" href={ `data:image/svg+xml;base64,${ btoa(showEnglish ? BunIcon : ReiIcon) }` } sizes="any" type="image/svg+xml" />
+                <link rel="icon" href={ `data:image/svg+xml;base64,${ Buffer.from(showEnglish ? BunIcon : ReiIcon).toString('base64') }` } sizes="any" type="image/svg+xml" />
             </Head>
 
             <header className={ styles.header }>
