@@ -19,6 +19,7 @@ export default async function handler(req, res) {
 
     let knownSentences = sentences.filter(sentence => {
         // check if sentence only contains kanji we know
+        if(sentence.en.length == 0 || sentence.ja.length == 0) return false
 
         for(let character of sentence.ja) {
             if(Kuroshiro.Util.isKanji(character) && !knownKanji.find(k => k.data.characters == character)) {
